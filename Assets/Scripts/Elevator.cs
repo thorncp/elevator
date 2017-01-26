@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Elevator : MonoBehaviour
 {
@@ -13,7 +12,6 @@ public class Elevator : MonoBehaviour
     private Vector3 openInnerDoorPosition;
     private Vector3 openOuterDoorPosition;
     private float innerDoorWidth;
-    private const float Buffer = 0.001f;
 
     private float InnerDoorSpeed { get { return DoorSpeed * Time.deltaTime; } }
     private float OuterDoorSpeed { get { return InnerDoorSpeed * 2; } }
