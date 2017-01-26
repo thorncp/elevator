@@ -25,8 +25,6 @@ public class Elevator : MonoBehaviour
         openOuterDoorPosition = OuterDoor.transform.localPosition + Vector3.right * innerDoorWidth * 2;
     }
 
-    private bool logged;
-
     public void Update()
     {
         if (Input.GetKeyUp(KeyCode.Space))
