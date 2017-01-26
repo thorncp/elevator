@@ -8,15 +8,26 @@ public class Elevator : MonoBehaviour
     public float DoorSpeed;
 
     private bool isOpening;
-    private Vector3 startingInnerDoorPosition;
+    private Vector3 closedInnerDoorPosition;
+    private Vector3 closedOuterDoorPosition;
+    private Vector3 openInnerDoorPosition;
+    private Vector3 openOuterDoorPosition;
     private float innerDoorWidth;
     private const float Buffer = 0.001f;
 
+    private float InnerDoorSpeed { get { return DoorSpeed * Time.deltaTime; } }
+    private float OuterDoorSpeed { get { return InnerDoorSpeed * 2; } }
+
     private void Start()
     {
-        startingInnerDoorPosition = InnerDoor.transform.localPosition;
+        closedInnerDoorPosition = InnerDoor.transform.localPosition;
+        closedOuterDoorPosition = OuterDoor.transform.localPosition;
         innerDoorWidth = InnerDoor.GetComponent<Renderer>().bounds.size.z;
+        openInnerDoorPosition = InnerDoor.transform.localPosition + Vector3.right * innerDoorWidth;
+        openOuterDoorPosition = OuterDoor.transform.localPosition + Vector3.right * innerDoorWidth * 2;
     }
+
+    private bool logged;
 
     public void Update()
     {
@@ -25,46 +36,31 @@ public class Elevator : MonoBehaviour
             isOpening = !isOpening;
         }
 
-        if (isOpening && !IsOpen())
+        if (isOpening)
         {
-            InnerDoor.transform.localPosition = new Vector3(
-                InnerDoor.transform.localPosition.x + DoorSpeed,
-                InnerDoor.transform.localPosition.y,
-                InnerDoor.transform.localPosition.z
+            InnerDoor.transform.localPosition = Vector3.MoveTowards(
+                InnerDoor.transform.localPosition,
+                openInnerDoorPosition,
+                InnerDoorSpeed
             );
-            OuterDoor.transform.localPosition = new Vector3(
-                OuterDoor.transform.localPosition.x + DoorSpeed * 2,
-                OuterDoor.transform.localPosition.y,
-                OuterDoor.transform.localPosition.z
+            OuterDoor.transform.localPosition = Vector3.MoveTowards(
+                OuterDoor.transform.localPosition,
+                openOuterDoorPosition,
+                OuterDoorSpeed
             );
         }
-        else if (!isOpening && !IsClosed())
+        else
         {
-            InnerDoor.transform.localPosition = new Vector3(
-                InnerDoor.transform.localPosition.x - DoorSpeed,
-                InnerDoor.transform.localPosition.y,
-                InnerDoor.transform.localPosition.z
+            InnerDoor.transform.localPosition = Vector3.MoveTowards(
+                InnerDoor.transform.localPosition,
+                closedInnerDoorPosition,
+                InnerDoorSpeed
             );
-            OuterDoor.transform.localPosition = new Vector3(
-                OuterDoor.transform.localPosition.x - DoorSpeed * 2,
-                OuterDoor.transform.localPosition.y,
-                OuterDoor.transform.localPosition.z
+            OuterDoor.transform.localPosition = Vector3.MoveTowards(
+                OuterDoor.transform.localPosition,
+                closedOuterDoorPosition,
+                OuterDoorSpeed
             );
         }
-    }
-
-    private bool IsClosed()
-    {
-        return DistanceFromStartingPosition() <= Buffer;
-    }
-
-    private bool IsOpen()
-    {
-        return DistanceFromStartingPosition() >= innerDoorWidth - Buffer;
-    }
-
-    private float DistanceFromStartingPosition()
-    {
-        return Math.Abs(InnerDoor.transform.localPosition.x - startingInnerDoorPosition.x);
     }
 }
